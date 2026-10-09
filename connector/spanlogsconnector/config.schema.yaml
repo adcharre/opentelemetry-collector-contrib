@@ -1,0 +1,57 @@
+$defs:
+  body_config:
+    description: BodyConfig configures how the log record body is built. At most one of Template or Logfmt may be set. When neither is set a logfmt body with default fields is used.
+    type: object
+    properties:
+      logfmt:
+        description: Logfmt is the list of field keys rendered into the body as logfmt `key=value` pairs.
+        type: array
+        items:
+          type: string
+      template:
+        description: Template is a string where `{key}` placeholders are replaced with the value of the named field. Use `{{` and `}}` for literal braces.
+        type: string
+  span_events_config:
+    description: SpanEventsConfig configures the log records produced for span events.
+    type: object
+    properties:
+      attributes:
+        description: Attributes is the list of attribute keys copied onto the log record. Keys are looked up on the span event first and then on the parent span.
+        type: array
+        items:
+          type: string
+      body:
+        description: Body configures the log record body.
+        $ref: body_config
+      enabled:
+        description: Enabled controls whether a log record is produced for each span event.
+        type: boolean
+  spans_config:
+    description: SpansConfig configures the log records produced for spans.
+    type: object
+    properties:
+      attributes:
+        description: Attributes is the list of span attribute keys copied onto the log record.
+        type: array
+        items:
+          type: string
+      body:
+        description: Body configures the log record body.
+        $ref: body_config
+      enabled:
+        description: Enabled controls whether a log record is produced for each span.
+        type: boolean
+description: Config defines the configuration options for the span logs connector.
+type: object
+properties:
+  resource_attributes:
+    description: ResourceAttributes is the list of resource attribute keys copied from the span's resource onto the resource of the produced logs.
+    type: array
+    items:
+      type: string
+  span_events:
+    description: SpanEvents configures the log records produced for each span event.
+    $ref: span_events_config
+  spans:
+    description: Spans configures the log records produced for each span.
+    $ref: spans_config

@@ -97,6 +97,10 @@ component_management:
     name: connector_slowsql
     paths:
     - connector/slowsqlconnector/**
+  - component_id: connector_spanlogs
+    name: connector_spanlogs
+    paths:
+    - connector/spanlogsconnector/**
   - component_id: connector_spanmetrics
     name: connector_spanmetrics
     paths:

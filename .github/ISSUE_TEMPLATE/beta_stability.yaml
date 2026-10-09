@@ -38,6 +38,7 @@ body:
       - connector/servicegraph
       - connector/signaltometrics
       - connector/slowsql
+      - connector/spanlogs
       - connector/spanmetrics
       - connector/sum
       - exporter/alertmanager

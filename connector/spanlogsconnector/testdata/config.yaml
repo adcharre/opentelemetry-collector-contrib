@@ -1,0 +1,32 @@
+span_logs:
+span_logs/full:
+  # Resource attributes copied onto the resource of the produced logs.
+  resource_attributes: [service.name, deployment.environment.name]
+  spans:
+    # Produce a log record for each span.
+    enabled: true
+    # Span attributes copied onto the log record.
+    attributes: [http.request.method, http.route]
+    body:
+      # Template body; `{key}` is replaced with a built-in field or attribute value.
+      template: "{span.name} {http.request.method} {http.route} took {span.duration}"
+  span_events:
+    # Produce a log record for each span event.
+    enabled: true
+    # Attributes looked up on the span event, then the parent span.
+    attributes: [exception.type, http.route]
+    body:
+      # logfmt body made of the listed fields.
+      logfmt: [event.name, exception.message]
+span_logs/disabled:
+  spans:
+    enabled: false
+span_logs/both_body:
+  spans:
+    body:
+      template: "{span.name}"
+      logfmt: [span.name]
+span_logs/bad_template:
+  spans:
+    body:
+      template: "{span.name"

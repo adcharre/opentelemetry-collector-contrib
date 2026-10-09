@@ -1,0 +1,13 @@
+type: span_logs
+display_name: Span Logs Connector
+
+status:
+  class: connector
+  stability:
+    development: [traces_to_logs]
+  distributions: []
+  codeowners:
+    active: [adcharre]
+
+tests:
+  config:

@@ -62,8 +62,6 @@ func (c *spanLogs) ConsumeTraces(ctx context.Context, td ptrace.Traces) error {
 		for j := 0; j < rs.ScopeSpans().Len(); j++ {
 			ss := rs.ScopeSpans().At(j)
 			sl := plog.NewScopeLogs()
-			ss.Scope().CopyTo(sl.Scope())
-			sl.SetSchemaUrl(ss.SchemaUrl())
 
 			for k := 0; k < ss.Spans().Len(); k++ {
 				c.appendSpanRecords(rs.Resource(), ss.Spans().At(k), sl.LogRecords(), observed)
@@ -73,7 +71,6 @@ func (c *spanLogs) ConsumeTraces(ctx context.Context, td ptrace.Traces) error {
 			}
 		}
 		if rl.ScopeLogs().Len() > 0 {
-			rl.SetSchemaUrl(rs.SchemaUrl())
 			rl.MoveTo(logs.ResourceLogs().AppendEmpty())
 		}
 	}

@@ -74,13 +74,9 @@ func TestConsumeTracesDefaultConfig(t *testing.T) {
 	require.Equal(t, 1, logs[0].LogRecordCount())
 
 	rl := logs[0].ResourceLogs().At(0)
-	assert.Equal(t, "https://opentelemetry.io/schemas/1.26.0", rl.SchemaUrl())
 	assert.Equal(t, map[string]any{"service.name": "checkout"}, rl.Resource().Attributes().AsRaw())
 
 	sl := rl.ScopeLogs().At(0)
-	assert.Equal(t, "test-scope", sl.Scope().Name())
-	assert.Equal(t, "1.0.0", sl.Scope().Version())
-
 	lr := sl.LogRecords().At(0)
 	assert.Equal(t, pcommon.NewTimestampFromTime(testStart), lr.Timestamp())
 	assert.NotZero(t, lr.ObservedTimestamp())

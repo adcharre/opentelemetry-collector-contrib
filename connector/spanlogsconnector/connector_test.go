@@ -86,6 +86,42 @@ func TestConsumeTracesDefaultConfig(t *testing.T) {
 	assert.Empty(t, lr.EventName())
 	assert.Equal(t, map[string]any{attrSpanDuration: int64(250 * time.Millisecond)}, lr.Attributes().AsRaw())
 	assert.Equal(t, `span.name="GET /cart" span.duration=250ms`, lr.Body().Str())
+	assert.Equal(t, plog.SeverityNumberUnspecified, lr.SeverityNumber())
+	assert.Empty(t, lr.SeverityText())
+}
+
+func TestConsumeTracesErrorSeverity(t *testing.T) {
+	tests := []struct {
+		code         ptrace.StatusCode
+		wantSeverity plog.SeverityNumber
+		wantText     string
+	}{
+		{code: ptrace.StatusCodeUnset, wantSeverity: plog.SeverityNumberUnspecified},
+		{code: ptrace.StatusCodeOk, wantSeverity: plog.SeverityNumberUnspecified},
+		{code: ptrace.StatusCodeError, wantSeverity: plog.SeverityNumberError, wantText: "ERROR"},
+	}
+	for _, tt := range tests {
+		t.Run(tt.code.String(), func(t *testing.T) {
+			cfg := createDefaultConfig().(*Config)
+			cfg.SpanEvents.Enabled = true
+			td := testTraces()
+			td.ResourceSpans().At(0).ScopeSpans().At(0).Spans().At(0).Status().SetCode(tt.code)
+
+			logs := consume(t, cfg, td)
+			require.Len(t, logs, 1)
+			records := logs[0].ResourceLogs().At(0).ScopeLogs().At(0).LogRecords()
+			require.Equal(t, 2, records.Len())
+
+			spanRecord := records.At(0)
+			assert.Equal(t, tt.wantSeverity, spanRecord.SeverityNumber())
+			assert.Equal(t, tt.wantText, spanRecord.SeverityText())
+
+			// Span event records do not inherit the span's status.
+			eventRecord := records.At(1)
+			assert.Equal(t, plog.SeverityNumberUnspecified, eventRecord.SeverityNumber())
+			assert.Empty(t, eventRecord.SeverityText())
+		})
+	}
 }
 
 func TestConsumeTracesSpanAttributesAndTemplate(t *testing.T) {

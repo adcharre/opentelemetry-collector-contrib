@@ -20,6 +20,10 @@ const attrSpanDuration = "span.duration_ns"
 
 const traceFlagsMask = 0xff
 
+// severityTextError is the severity text set on log records for spans with an
+// error status, using the short name from the OpenTelemetry log data model.
+const severityTextError = "ERROR"
+
 type spanLogs struct {
 	logsConsumer consumer.Logs
 	config       *Config
@@ -89,6 +93,10 @@ func (c *spanLogs) appendSpanRecords(res pcommon.Resource, span ptrace.Span, rec
 		lr := records.AppendEmpty()
 		setCommonFields(lr, span, observed, duration)
 		lr.SetTimestamp(span.StartTimestamp())
+		if span.Status().Code() == ptrace.StatusCodeError {
+			lr.SetSeverityNumber(plog.SeverityNumberError)
+			lr.SetSeverityText(severityTextError)
+		}
 		copyAttributes(span.Attributes(), lr.Attributes(), c.config.Spans.Attributes)
 		lr.Body().SetStr(c.spanBody.build(rc))
 	}

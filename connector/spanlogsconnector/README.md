@@ -41,6 +41,7 @@ For each span, the connector produces a log record with:
 | Observed timestamp | Time the span was processed by the connector |
 | Trace ID / Span ID | The span's trace ID and span ID |
 | Flags | The span's W3C trace flags |
+| Severity | `ERROR` (severity number 17) when the span status is `Error`, otherwise unset |
 | Attribute `span.duration_ns` | Span duration (end time - start time) in nanoseconds, as an integer |
 | Attributes | The span attributes listed in `spans.attributes` |
 | Body | Built from `spans.body` |
@@ -51,12 +52,12 @@ When `span_events.enabled` is `true`, each span event also produces a log record
 | ----- | ----- |
 | Timestamp | Span event time |
 | Event name | The span event's name |
+| Severity | Unset |
 | Observed timestamp, Trace ID, Span ID, Flags, `span.duration_ns` | As for the parent span |
 | Attributes | The attributes listed in `span_events.attributes`, read from the span event or, if absent there, from the parent span |
 | Body | Built from `span_events.body` |
 
-Log records keep the instrumentation scope and schema URLs of the spans they were created from. The
-resource of the produced logs only contains the resource attributes listed in `resource_attributes`.
+The resource of the produced logs only contains the resource attributes listed in `resource_attributes`.
 
 ## Configuration
 
